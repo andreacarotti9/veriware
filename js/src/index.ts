@@ -16,6 +16,15 @@
  * if (result.ok) console.log('final at height', result.decoded.block.height);
  * ```
  *
+ * @example Follow alto's finalized head, verifying every frame
+ * ```ts
+ * const client = new AltoIndexerClient({
+ *   url: 'https://global.alto.exoware.xyz',
+ *   network: networks.alto,
+ * });
+ * client.subscribe((block) => console.log('final at', block.block.height));
+ * ```
+ *
  * @example Any other threshold-simplex chain
  * ```ts
  * const mine = defineNetwork({ namespace: '_MYCHAIN', identity: fromHex('...') });
@@ -39,6 +48,15 @@
  * @packageDocumentation
  */
 
+export {
+  AltoIndexerClient,
+  type FetchLike,
+  type FrameInfo,
+  type IndexerOptions,
+  type Subscription,
+  type WebSocketFactory,
+  type WebSocketLike,
+} from './client.js';
 export { init, isInitialized, type WasmSource } from './init.js';
 export { fromHex, toHex } from './hex.js';
 export { ALTO_NAMESPACE, defineNetwork, networks, type Network } from './networks.js';

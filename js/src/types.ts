@@ -27,6 +27,13 @@
  * - `invalid_signature` - well-formed, but not signed by this network.
  * - `unknown_kind` - a framed message with an unrecognized kind byte.
  * - `not_initialized` - {@link init} has not resolved yet.
+ *
+ * Two more come from the indexer client rather than from a payload:
+ *
+ * - `unavailable` - the request failed or the indexer answered with an error
+ *   status. Nothing was verified either way.
+ * - `unexpected_response` - the payload verified, but answers a different
+ *   question than was asked: another view, another height, another block.
  */
 export type VerifyErrorCode =
   | 'too_large'
@@ -39,7 +46,9 @@ export type VerifyErrorCode =
   | 'invalid_certificate'
   | 'invalid_signature'
   | 'unknown_kind'
-  | 'not_initialized';
+  | 'not_initialized'
+  | 'unavailable'
+  | 'unexpected_response';
 
 /** A typed rejection. Never thrown, always returned. */
 export interface VerifyError {
