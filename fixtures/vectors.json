@@ -1,0 +1,305 @@
+{
+  "generatedBy": "just fixtures",
+  "about": "Golden vectors for veriware. Regenerating must not change this file; if it does, verification behavior changed.",
+  "rngSeed": 0,
+  "validators": 4,
+  "maxPayloadLen": 1024,
+  "networks": {
+    "alt": {
+      "namespace": "5f56455249574152455f54455354",
+      "identity": "b80d9a4e4ead5014d9576babd31489f5f595e8b9a265e064c6ac99ebc485900faa82c3c3d6c36daf8f3c90ec5b51ddaf0904c703cdbbc07cac376e753205f1aa8b89fc50bed9c94f93c74c96323d85ad0ff66defad037cbd8d221cf99351e3bf",
+      "about": "A second devnet on a different namespace, standing in for any non-alto threshold-simplex chain."
+    },
+    "devnet": {
+      "namespace": "5f414c544f",
+      "identity": "98c6e82fdf8990fa8b78df3788c45d4a36d83dd6c4e619b7b746abe12891427dd93ccd2d00596b8a87a5b084578fd2cf0a1f3a02672f4b370b2601e6425f873eafeb10a62adaa093b503a8630b89994c5f1401e62001896d2bd4f858be2cb941",
+      "about": "Deterministic alto devnet. Never a live network."
+    }
+  },
+  "vectors": [
+    {
+      "name": "seed/valid",
+      "kind": "seed",
+      "network": "devnet",
+      "payload": "0009966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66",
+      "verify": "ok",
+      "decode": "ok",
+      "about": "The per-view VRF seed recovered from a notarization."
+    },
+    {
+      "name": "seed/foreign-signature",
+      "kind": "seed",
+      "network": "devnet",
+      "payload": "0009b9b60914a3f7b5665a21c64d52b0f1c686638d70cb299b53714ed271f225d28b6550fd7b7b5f3e2678d8e5c924c1abb2",
+      "verify": "invalid_signature",
+      "decode": "ok",
+      "about": "This network's real signature, for the wrong round. Decodes cleanly and fails only on the signature check, which a bit flip cannot test: a flipped compressed point usually stops being a point at all."
+    },
+    {
+      "name": "seed/non-point-signature",
+      "kind": "seed",
+      "network": "devnet",
+      "payload": "0009ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "verify": "malformed",
+      "decode": "malformed",
+      "about": "Signature bytes that are not on the curve. A seed decodes its signature eagerly, so this is caught while reading."
+    },
+    {
+      "name": "seed/truncated",
+      "kind": "seed",
+      "network": "devnet",
+      "payload": "0009966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426b",
+      "verify": "truncated",
+      "decode": "truncated",
+      "about": "Signature cut short mid-field."
+    },
+    {
+      "name": "seed/trailing-bytes",
+      "kind": "seed",
+      "network": "devnet",
+      "payload": "0009966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b660000",
+      "verify": "trailing_bytes",
+      "decode": "trailing_bytes",
+      "about": "A valid seed with junk appended. Must not be accepted."
+    },
+    {
+      "name": "seed/empty",
+      "kind": "seed",
+      "network": "devnet",
+      "payload": "",
+      "verify": "truncated",
+      "decode": "truncated",
+      "about": "Zero bytes."
+    },
+    {
+      "name": "seed/from-another-network",
+      "kind": "seed",
+      "network": "devnet",
+      "payload": "0009b8c5e1d05c96f42d13f67846ec279a7ac205eb6a8dc985d51088407c67c8d559a18c8df37e052b3eba0497cfa0072032",
+      "verify": "invalid_signature",
+      "decode": "ok",
+      "about": "A genuine seed from a network with a different namespace and identity, offered to the alto devnet."
+    },
+    {
+      "name": "seed/valid-on-alt-network",
+      "kind": "seed",
+      "network": "alt",
+      "payload": "0009b8c5e1d05c96f42d13f67846ec279a7ac205eb6a8dc985d51088407c67c8d559a18c8df37e052b3eba0497cfa0072032",
+      "verify": "ok",
+      "decode": "ok",
+      "about": "The same payload against its own network. Proves the namespace and identity are parameters, not constants."
+    },
+    {
+      "name": "notarization/valid",
+      "kind": "notarization",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ac0fd661848976a47a2bde1267e85941c5a64b0c805054c2f1f322d5912f46ddae880ea6fc8603503f343d72c06cef67966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66",
+      "verify": "ok",
+      "decode": "ok",
+      "about": "A notarization certificate without the block it certifies."
+    },
+    {
+      "name": "notarization/foreign-vote-signature",
+      "kind": "notarization",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c2488d5dabede00342898005f3de1de0dd836578415fe33eafa373809e221b0d9647695bc9f93906138eff96edea44c5e76966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66",
+      "verify": "invalid_signature",
+      "decode": "ok",
+      "about": "The finalization's vote signature over the same proposal. Notarizing and finalizing sign different messages, so this is a real signature that means the wrong thing."
+    },
+    {
+      "name": "notarization/foreign-seed-signature",
+      "kind": "notarization",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ac0fd661848976a47a2bde1267e85941c5a64b0c805054c2f1f322d5912f46ddae880ea6fc8603503f343d72c06cef67b9b60914a3f7b5665a21c64d52b0f1c686638d70cb299b53714ed271f225d28b6550fd7b7b5f3e2678d8e5c924c1abb2",
+      "verify": "invalid_signature",
+      "decode": "ok",
+      "about": "Vote signature intact, seed signature taken from another round. Both halves of the certificate are checked."
+    },
+    {
+      "name": "notarization/non-point-signature",
+      "kind": "notarization",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "verify": "invalid_signature",
+      "decode": "invalid_certificate",
+      "about": "Signature bytes that are not points on the curve. A certificate decodes its signature lazily, so this is where the verify and decode paths diverge."
+    },
+    {
+      "name": "notarization/is-a-finalization",
+      "kind": "notarization",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c2488d5dabede00342898005f3de1de0dd836578415fe33eafa373809e221b0d9647695bc9f93906138eff96edea44c5e76966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66",
+      "verify": "invalid_signature",
+      "decode": "ok",
+      "about": "Notarizations and finalizations encode identically and are told apart only by the message they sign."
+    },
+    {
+      "name": "notarization/oversized",
+      "kind": "notarization",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ac0fd661848976a47a2bde1267e85941c5a64b0c805054c2f1f322d5912f46ddae880ea6fc8603503f343d72c06cef67966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "verify": "too_large",
+      "decode": "too_large",
+      "about": "Rejected on length before a decoder sees it."
+    },
+    {
+      "name": "finalization/valid",
+      "kind": "finalization",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c2488d5dabede00342898005f3de1de0dd836578415fe33eafa373809e221b0d9647695bc9f93906138eff96edea44c5e76966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66",
+      "verify": "ok",
+      "decode": "ok",
+      "about": "A finalization certificate without the block it certifies."
+    },
+    {
+      "name": "finalization/is-a-notarization",
+      "kind": "finalization",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ac0fd661848976a47a2bde1267e85941c5a64b0c805054c2f1f322d5912f46ddae880ea6fc8603503f343d72c06cef67966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66",
+      "verify": "invalid_signature",
+      "decode": "ok",
+      "about": "The mirror of notarization/is-a-finalization: a notarization must not be mistaken for finality."
+    },
+    {
+      "name": "notarized/valid",
+      "kind": "notarized",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ac0fd661848976a47a2bde1267e85941c5a64b0c805054c2f1f322d5912f46ddae880ea6fc8603503f343d72c06cef67966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b6600092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3c19c33",
+      "verify": "ok",
+      "decode": "ok",
+      "about": "What alto's /notarization endpoint serves: certificate plus block."
+    },
+    {
+      "name": "notarized/swapped-block",
+      "kind": "notarized",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ac0fd661848976a47a2bde1267e85941c5a64b0c805054c2f1f322d5912f46ddae880ea6fc8603503f343d72c06cef67966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b6600012a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000018180b3c19c33",
+      "verify": "inconsistent",
+      "decode": "inconsistent",
+      "about": "A real certificate stapled to a different real block. Caught while decoding, since the digest binding is structural."
+    },
+    {
+      "name": "notarized/truncated",
+      "kind": "notarized",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ac0fd661848976a47a2bde1267e85941c5a64b0c805054c2f1f322d5912f46ddae880ea6fc8603503f343d72c06cef67966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b6600092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c1680289",
+      "verify": "truncated",
+      "decode": "truncated",
+      "about": "Block cut short after a complete certificate."
+    },
+    {
+      "name": "finalized/valid",
+      "kind": "finalized",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c2488d5dabede00342898005f3de1de0dd836578415fe33eafa373809e221b0d9647695bc9f93906138eff96edea44c5e76966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b6600092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3c19c33",
+      "verify": "ok",
+      "decode": "ok",
+      "about": "What alto's /finalization and /block/latest endpoints serve."
+    },
+    {
+      "name": "finalized/valid-parent",
+      "kind": "finalized",
+      "network": "devnet",
+      "payload": "000100702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168b2d57e69d0069b118be4e14859c4683bc2e59e459b88316ed5452de5fa38a3c84641671d0adebd542f67ad8e42ef5113b9b60914a3f7b5665a21c64d52b0f1c686638d70cb299b53714ed271f225d28b6550fd7b7b5f3e2678d8e5c924c1abb200012a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c20000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000018180b3c19c33",
+      "verify": "ok",
+      "decode": "ok",
+      "about": "The parent of finalized/valid. Two heights make a chain the demo can walk."
+    },
+    {
+      "name": "finalized/tampered-block",
+      "kind": "finalized",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c2488d5dabede00342898005f3de1de0dd836578415fe33eafa373809e221b0d9647695bc9f93906138eff96edea44c5e76966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b6600092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3c19c32",
+      "verify": "inconsistent",
+      "decode": "inconsistent",
+      "about": "A byte of the block changed, which changes its digest, which breaks the binding to the certificate."
+    },
+    {
+      "name": "finalized/oversized",
+      "kind": "finalized",
+      "network": "devnet",
+      "payload": "000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c2488d5dabede00342898005f3de1de0dd836578415fe33eafa373809e221b0d9647695bc9f93906138eff96edea44c5e76966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b6600092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3c19c330000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "verify": "too_large",
+      "decode": "too_large",
+      "about": "Rejected on length before a decoder sees it."
+    },
+    {
+      "name": "block/valid",
+      "kind": "block",
+      "network": "devnet",
+      "payload": "00092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3c19c33",
+      "verify": null,
+      "decode": "ok",
+      "about": "A block on its own. Nothing certifies it, so there is nothing to verify."
+    },
+    {
+      "name": "block/truncated",
+      "kind": "block",
+      "network": "devnet",
+      "payload": "00092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3",
+      "verify": null,
+      "decode": "truncated",
+      "about": "Block cut short mid-field."
+    },
+    {
+      "name": "block/trailing-bytes",
+      "kind": "block",
+      "network": "devnet",
+      "payload": "00092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3c19c33ff",
+      "verify": null,
+      "decode": "trailing_bytes",
+      "about": "A valid block with junk appended."
+    }
+  ],
+  "frames": [
+    {
+      "name": "frame/seed",
+      "network": "devnet",
+      "frame": "000009966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66",
+      "kind": "seed",
+      "expect": "ok",
+      "about": "Kind byte 0. The indexer's WebSocket frames a seed this way."
+    },
+    {
+      "name": "frame/notarization",
+      "network": "devnet",
+      "frame": "01000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c24ac0fd661848976a47a2bde1267e85941c5a64b0c805054c2f1f322d5912f46ddae880ea6fc8603503f343d72c06cef67966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b6600092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3c19c33",
+      "kind": "notarization",
+      "expect": "ok",
+      "about": "Kind byte 1 carries a certificate plus its block, not a bare certificate."
+    },
+    {
+      "name": "frame/finalization",
+      "network": "devnet",
+      "frame": "02000901e46796755a81ff40e25ae8d66d6d3b7b84c0ca323b4254facfb5b56b6d6f2c2488d5dabede00342898005f3de1de0dd836578415fe33eafa373809e221b0d9647695bc9f93906138eff96edea44c5e76966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b6600092a685998ee44953a3eb0a5d316937f810a80bdcc952c0aa07b4d82b3fed459c201702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168702a2aa8d22ae347ef98d206abe0e8789d9fab069119694fc1d571a47f29c168028980b3c19c33",
+      "kind": "finalization",
+      "expect": "ok",
+      "about": "Kind byte 2, likewise certificate plus block."
+    },
+    {
+      "name": "frame/tampered-seed",
+      "network": "devnet",
+      "frame": "000009b9b60914a3f7b5665a21c64d52b0f1c686638d70cb299b53714ed271f225d28b6550fd7b7b5f3e2678d8e5c924c1abb2",
+      "kind": null,
+      "expect": "invalid_signature",
+      "about": "A framed forgery. The client must drop it."
+    },
+    {
+      "name": "frame/unknown-kind",
+      "network": "devnet",
+      "frame": "070009966968b3334ed287cd91e5a10434f43913ee56ccff23b93c30733e94da19936d4af90a39c720426bd9d39edeea603b66",
+      "kind": null,
+      "expect": "unknown_kind",
+      "about": "A kind byte from a future protocol version."
+    },
+    {
+      "name": "frame/empty",
+      "network": "devnet",
+      "frame": "",
+      "kind": null,
+      "expect": "truncated",
+      "about": "A zero-length frame: not even a kind byte to read."
+    }
+  ]
+}
