@@ -20,6 +20,12 @@ Recorded 2026-08-11.
 wasm-pack downloads a `wasm-bindgen-cli` matching the `wasm-bindgen` version in
 `Cargo.lock`, so the CLI needs no separate pin.
 
+**macOS also needs `brew install llvm`.** Apple's clang has no WebAssembly
+backend, and `commonware-consensus` pulls in `zstd`, which is C. `just wasm`
+picks up `/opt/homebrew/opt/llvm/bin/clang` automatically when it is present.
+Linux clang already has the backend, so CI needs nothing extra. See decision
+D10.
+
 ## Rust crates
 
 | Crate | Version | Why it is here |
@@ -37,6 +43,10 @@ wasm-pack downloads a `wasm-bindgen-cli` matching the `wasm-bindgen` version in
 | `thiserror` | 2.0.20 | Typed errors. |
 | `rand` | 0.10.2 | Dev/fixtures only: seeded `StdRng` for deterministic vectors. |
 | `serde_json` | 1.0.151 | Dev/fixtures only: the fixture manifest. |
+
+Browser tests need Chromium: `cd js && npx playwright install chromium`. They
+run under `just test-browser`, not `just ci`, so a machine without it can still
+gate a change.
 
 The four `commonware-*` crates are pinned to 2026.7.0 because that is what
 `alto-types` 2026.7.1 resolves to. They must move together with it.
