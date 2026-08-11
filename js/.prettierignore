@@ -1,0 +1,8 @@
+dist
+src/wasm
+
+# Staged from the repository root at build time; formatted there, not here.
+README.md
+LICENSE-APACHE
+LICENSE-MIT
+NOTICE

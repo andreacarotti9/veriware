@@ -1,0 +1,23 @@
+veriware
+Copyright (c) 2026 The veriware Authors
+
+This product depends on, and is derived in part from, software developed by
+Commonware, Inc.
+
+  - alto (https://github.com/commonwarexyz/alto), licensed MIT OR Apache-2.0.
+    veriware wraps the published `alto-types` crate and reuses its verification
+    paths verbatim. The consensus certificate formats, the `_ALTO` signing
+    namespace, the indexer HTTP/WebSocket endpoint shapes, and the network
+    identities shipped in `networks.ts` all originate there.
+
+  - commonware (https://github.com/commonwarexyz/monorepo), licensed
+    MIT OR Apache-2.0. All cryptography (BLS12-381 threshold signatures,
+    hash-to-curve, domain separation) and all codec logic is theirs; veriware
+    reimplements none of it.
+
+In-browser verification of alto certificates was pioneered by the alto
+explorer, which compiles `alto-types` to WebAssembly and verifies certificates
+client-side. veriware packages that capability as a versioned, documented npm
+package and generalizes it to any threshold-simplex network.
+
+veriware is not affiliated with or endorsed by Commonware, Inc.

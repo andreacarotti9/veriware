@@ -1,0 +1,54 @@
+[workspace]
+members = [
+    "core",
+    "fixtures/generator",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/andreacarotti/veriware"
+
+# Every dependency is pinned exactly. Certificate formats are a wire contract:
+# a patch bump upstream can change what verifies, so bumps are deliberate and
+# gated by the fixture parity suite. See docs/versions.md.
+[workspace.dependencies]
+veriware-core = { version = "0.1.0", path = "core" }
+alto-types = "=2026.7.1"
+commonware-codec = "=2026.7.0"
+commonware-consensus = "=2026.7.0"
+commonware-cryptography = "=2026.7.0"
+commonware-parallel = "=2026.7.0"
+commonware-utils = "=2026.7.0"
+rand = "=0.10.2"
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = "=1.0.151"
+thiserror = "=2.0.20"
+
+[profile.bench]
+# Because we enable overflow checks in "release," we should benchmark with them.
+overflow-checks = true
+
+[profile.dev]
+# Although overflow checks are enabled by default in "dev", we explicitly
+# enable them here for clarity.
+overflow-checks = true
+
+[profile.release]
+# To guard against unexpected behavior in production, we enable overflow checks in
+# "release" although they incur some performance penalty.
+overflow-checks = true
+# Use a single codegen unit for better optimization (slower compile, faster runtime)
+codegen-units = 1
+# Enable link-time optimization across all crates
+lto = true
+# Abort on panic: a panicking path is a bug we want to fail loudly, and unwinding
+# tables are dead weight in the WASM artifact.
+panic = "abort"
+
+[profile.test]
+# Although overflow checks are enabled by default in "test", we explicitly
+# enable them here for clarity.
+overflow-checks = true

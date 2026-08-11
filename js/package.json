@@ -1,0 +1,71 @@
+{
+  "name": "veriware",
+  "version": "0.1.0",
+  "description": "Verify commonware threshold-simplex consensus certificates in the browser. Alto included.",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andreacarotti/veriware.git"
+  },
+  "homepage": "https://github.com/andreacarotti/veriware#readme",
+  "bugs": {
+    "url": "https://github.com/andreacarotti/veriware/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./veriware_bg.wasm": "./dist/wasm/veriware_bg.wasm"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE-APACHE",
+    "LICENSE-MIT",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/stage-package.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint . && prettier --check .",
+    "fmt": "eslint . --fix && prettier --write .",
+    "test": "vitest run --project node",
+    "test:browser": "vitest run --project browser",
+    "size": "size-limit"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@size-limit/file": "13.0.3",
+    "@types/node": "26.2.0",
+    "@vitest/browser": "4.1.10",
+    "@vitest/browser-playwright": "4.1.10",
+    "eslint": "10.8.1",
+    "eslint-config-prettier": "10.1.8",
+    "playwright": "1.62.1",
+    "prettier": "3.9.6",
+    "size-limit": "13.0.3",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0",
+    "vitest": "4.1.10"
+  },
+  "size-limit": [
+    {
+      "name": "wasm (brotli)",
+      "path": "dist/wasm/veriware_bg.wasm",
+      "limit": "100 kB"
+    },
+    {
+      "name": "js glue + wrapper (brotli)",
+      "path": [
+        "dist/**/*.js"
+      ],
+      "limit": "16 kB"
+    }
+  ]
+}

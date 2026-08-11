@@ -1,0 +1,21 @@
+*.swp
+*.DS_Store
+*.vscode
+target
+node_modules
+/core/pkg
+/js/pkg
+/js/dist
+/js/*.tgz
+
+# wasm-pack output, rebuilt by `just wasm`.
+/js/src/wasm/
+
+# Compiled demo page, rebuilt by `just demo`.
+/demo/main.js
+
+# Staged into the package at build time; the originals live at the repository root.
+/js/README.md
+/js/LICENSE-APACHE
+/js/LICENSE-MIT
+/js/NOTICE

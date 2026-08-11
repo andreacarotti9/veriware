@@ -1,0 +1,37 @@
+[package]
+name = "veriware-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Verify commonware threshold-simplex consensus certificates. Native and WebAssembly."
+documentation = "https://docs.rs/veriware-core"
+readme = "README.md"
+publish = false
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[dependencies]
+alto-types = { workspace = true }
+commonware-codec = { workspace = true }
+commonware-consensus = { workspace = true }
+commonware-cryptography = { workspace = true }
+commonware-parallel = { workspace = true }
+commonware-utils = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+serde-wasm-bindgen = "=0.6.5"
+wasm-bindgen = "=0.2.127"
+
+# Browser entropy for the randomizers used in batch certificate verification.
+# Mirrors alto-types, whose wasm target has the same requirement.
+[target.'cfg(target_arch = "wasm32")'.dependencies.getrandom]
+version = "=0.4.3"
+features = ["wasm_js"]
+
+[dev-dependencies]
+commonware-consensus = { workspace = true, features = ["mocks"] }
+commonware-cryptography = { workspace = true, features = ["mocks"] }
+rand = { workspace = true }
+serde_json = { workspace = true }
