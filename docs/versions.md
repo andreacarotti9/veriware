@@ -5,7 +5,9 @@ Certificate encodings are a wire contract: an upstream patch release can change
 what verifies. Bumps are deliberate - run `just bump-deps`, then `just ci`, and
 let the fixture parity suite prove nothing moved.
 
-Recorded 2026-08-11.
+Recorded 2026-08-11. Names claimed on npm and crates.io: `veriware` (npm),
+`veriware` and `veriware-core` (crates.io), all verified free on that date and
+none of them published yet.
 
 ## Toolchain
 

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>veriware - vanilla browser example</title>
+  </head>
+  <body>
+    <p>Latest alto height: <output id="height">...</output></p>
+
+    <!--
+      No bundler, no build step. `--target web` output loads from a plain module
+      script, which is why the package ships exactly one WASM artifact.
+
+      Served here from a CDN; swap in your own path if you host the package.
+    -->
+    <script type="module">
+      import {
+        AltoIndexerClient,
+        init,
+        networks,
+      } from 'https://esm.sh/veriware@0.1.0';
+
+      await init();
+
+      const client = new AltoIndexerClient({
+        url: 'https://global.alto.exoware.xyz',
+        network: networks.alto,
+      });
+
+      // Every frame is verified against alto's threshold key before it gets
+      // here. A forgery never reaches this callback.
+      client.subscribe((block) => {
+        document.getElementById('height').textContent = String(block.block.height);
+      });
+    </script>
+  </body>
+</html>
