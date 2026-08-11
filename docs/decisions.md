@@ -53,3 +53,29 @@ gap this project fills is what has to sit on top:
 
 None of that required reaching into `alto-types` internals; every path is
 public API.
+
+## Sequential verification, OS entropy
+
+Verification uses `commonware_parallel::Sequential`. WebAssembly has no threads
+without `SharedArrayBuffer` and cross-origin isolation, which is a deployment
+burden not worth imposing on consumers, and there is nothing to parallelize
+within a single threshold aggregate anyway.
+
+`Notarization::verify` and `Finalization::verify` take a `CryptoRng` to
+randomize batch verification. This passes `commonware_utils::sys_rng()`, as
+`alto-types` does, which is `crypto.getRandomValues` in a browser and hence the
+`getrandom/wasm_js` pin for wasm32. Seeding it deterministically would make the
+randomizers predictable and weaken batch verification, so it is not an option.
+
+## Errors are values on both sides of the boundary
+
+Nothing throws for bad input. The WASM bindings serialize
+`{ ok: true, decoded } | { ok: false, error: { code, message } }`, because a
+`wasm_bindgen` `Result::Err` becomes a thrown JS exception, which is the one
+failure mode a caller of an adversarial-input API forgets to catch. `code` is
+stable and part of the public API; `message` is not.
+
+`u64` crosses as `bigint`. Views, heights and timestamps are
+attacker-controlled and pass `Number.MAX_SAFE_INTEGER` long before they
+exhaust `u64`, and a verified value that silently rounds is worse than one the
+caller has to write `2n` for.
