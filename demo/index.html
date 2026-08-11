@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>veriware - alto finality, verified in your browser</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b0d10;
+        --panel: #14171c;
+        --line: #232830;
+        --text: #e6e9ef;
+        --dim: #8b93a1;
+        --ok: #4ade80;
+        --bad: #f87171;
+        --accent: #7dd3fc;
+        --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 2rem 1.25rem 4rem;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          15px/1.55 system-ui,
+          -apple-system,
+          sans-serif;
+      }
+
+      main {
+        max-width: 46rem;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1.35rem;
+        letter-spacing: -0.01em;
+      }
+
+      .tagline {
+        margin: 0 0 1.75rem;
+        color: var(--dim);
+      }
+
+      .tagline code {
+        font-family: var(--mono);
+        color: var(--accent);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 1.25rem;
+      }
+
+      select {
+        padding: 0.4rem 0.6rem;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--text);
+        font: inherit;
+      }
+
+      .status {
+        margin-left: auto;
+        color: var(--dim);
+        font-family: var(--mono);
+        font-size: 0.82rem;
+      }
+
+      .status::before {
+        content: '●';
+        margin-right: 0.4rem;
+        color: var(--dim);
+      }
+
+      .status[data-state='live']::before {
+        color: var(--ok);
+      }
+
+      .status[data-state='replay']::before {
+        color: var(--accent);
+      }
+
+      .status[data-state='down']::before {
+        color: var(--bad);
+      }
+
+      .tiles {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .tile {
+        padding: 0.85rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+      }
+
+      .tile dt {
+        margin: 0 0 0.3rem;
+        color: var(--dim);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
+      .tile dd {
+        margin: 0;
+        font-family: var(--mono);
+        font-size: 1.45rem;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .digest {
+        padding: 0.7rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: var(--panel);
+        margin-bottom: 1.25rem;
+        overflow-x: auto;
+      }
+
+      .digest span {
+        color: var(--dim);
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
+      .digest code {
+        display: block;
+        margin-top: 0.3rem;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        white-space: nowrap;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--mono);
+        font-size: 0.82rem;
+      }
+
+      caption {
+        margin-bottom: 0.5rem;
+        color: var(--dim);
+        font-family: system-ui, sans-serif;
+        font-size: 0.8rem;
+        text-align: left;
+      }
+
+      th {
+        padding: 0 0.5rem 0.4rem 0;
+        border-bottom: 1px solid var(--line);
+        color: var(--dim);
+        font-size: 0.72rem;
+        font-weight: 500;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
+      td {
+        padding: 0.35rem 0.5rem 0.35rem 0;
+        border-bottom: 1px solid var(--line);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+
+      td.verdict[data-ok='true'] {
+        color: var(--ok);
+      }
+
+      td.verdict[data-ok='false'] {
+        color: var(--bad);
+      }
+
+      footer {
+        margin-top: 2rem;
+        color: var(--dim);
+        font-size: 0.82rem;
+      }
+
+      footer a {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>alto finality, verified in your browser</h1>
+      <p class="tagline">
+        Every certificate below was checked against the network's threshold key by
+        <code>veriware</code>, running as WebAssembly on this page. No server was asked to vouch
+        for any of it.
+      </p>
+
+      <div class="controls">
+        <label for="network">Network</label>
+        <select id="network">
+          <option value="alto">alto - global cluster</option>
+          <option value="altoUsa">alto - USA cluster</option>
+          <option value="altoDevnet">devnet - fixture replay</option>
+        </select>
+        <span class="status" id="status" data-state="idle">starting</span>
+      </div>
+
+      <dl class="tiles">
+        <div class="tile"><dt>Height</dt><dd id="height">-</dd></div>
+        <div class="tile"><dt>View</dt><dd id="view">-</dd></div>
+        <div class="tile"><dt>Verified in</dt><dd id="latency">-</dd></div>
+        <div class="tile"><dt>Accepted / rejected</dt><dd id="counts">0 / 0</dd></div>
+      </dl>
+
+      <div class="digest">
+        <span>Finalized block digest</span>
+        <code id="digest">-</code>
+      </div>
+
+      <table>
+        <caption id="caption">Most recent certificates</caption>
+        <thead>
+          <tr>
+            <th>Kind</th>
+            <th>View</th>
+            <th>Height</th>
+            <th>Verify</th>
+            <th>Verdict</th>
+          </tr>
+        </thead>
+        <tbody id="log"></tbody>
+      </table>
+
+      <footer>
+        In-browser verification of alto certificates was pioneered by the
+        <a href="https://alto.commonware.xyz">alto explorer</a>; veriware packages it. The
+        cryptography is commonware's - this page reimplements none of it.
+      </footer>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
