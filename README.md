@@ -1,5 +1,7 @@
 # veriware
 
+[![CI](https://github.com/andreacarotti9/veriware/actions/workflows/ci.yml/badge.svg)](https://github.com/andreacarotti9/veriware/actions/workflows/ci.yml)
+
 Verify [commonware](https://commonware.xyz) threshold-simplex consensus
 certificates in the browser. [alto](https://alto.commonware.xyz) included.
 
@@ -15,11 +17,16 @@ npm install veriware
 
 ## Don't trust the indexer
 
-The standard architecture for a chain frontend is to fetch from an indexer and
-believe it. That norm exists because verifying used to be expensive: on
-Ethereum, a page that wants proof has to embed a light client, follow sync
-committees, and wait for it to sync, so almost nobody does - and a lying
-endpoint shows your users whatever it likes.
+Anything that shows chain data - a dapp, an explorer, a dashboard - has two
+options. The widely adopted one is to fetch from an indexer or an RPC provider
+and believe it: nothing to ship, nothing to sync, and it works right up until
+the endpoint is compromised or dishonest - at which point it shows your users
+whatever it likes, and nothing in the page can tell.
+
+The other option is to verify, and it is rare because it used to be expensive:
+on Ethereum it means embedding a light client such as
+[Helios](https://github.com/a16z/helios), following sync committees, and
+waiting for it to sync, so almost nobody does.
 
 Threshold-simplex removes the expense. The network's threshold key is one fixed
 96-byte value, so checking a certificate is a single stateless signature
@@ -126,7 +133,9 @@ if it grows past the budget.
 
 - **Not a light client.** Verifying a finalization proves the certificate is
   real. It does not prove that it is the newest one, that the chain is live, or
-  that you are not being shown a stale view.
+  that you are not being shown a stale view. A Helios-style client tracks the
+  chain's head to close that gap; veriware trades recency for a stateless
+  check.
 - **Not an execution verifier.** Application state is out of scope; this checks
   consensus certificates.
 - **Not a wallet.** It signs nothing and holds no keys.

@@ -14,8 +14,10 @@ fmt:
 
 alias f := fmt
 
-# Every linter, no fixes. Fails on any warning.
-lint:
+# Every linter, no fixes. Fails on any warning. Depends on `build` because
+# typechecking needs the generated WASM bindings and the demo imports the
+# built package; on a fresh checkout neither exists yet.
+lint: build
     cargo fmt --all -- --check
     cargo clippy --all-targets --all-features -- -D warnings
     cd {{pkg}} && npm run lint && npm run typecheck

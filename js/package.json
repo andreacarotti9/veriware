@@ -5,11 +5,11 @@
   "license": "MIT OR Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andreacarotti/veriware.git"
+    "url": "git+https://github.com/andreacarotti9/veriware.git"
   },
-  "homepage": "https://github.com/andreacarotti/veriware#readme",
+  "homepage": "https://github.com/andreacarotti9/veriware#readme",
   "bugs": {
-    "url": "https://github.com/andreacarotti/veriware/issues"
+    "url": "https://github.com/andreacarotti9/veriware/issues"
   },
   "type": "module",
   "sideEffects": false,

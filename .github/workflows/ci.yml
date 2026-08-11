@@ -1,0 +1,83 @@
+# A thin wrapper over `just ci`. Every gate lives in the justfile, so a green
+# run here means the same commands were green locally - there is no CI-only
+# configuration to drift.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: js/package-lock.json
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just,wasm-pack,cargo-nextest
+
+      - name: Install dependencies
+        run: cd js && npm ci
+
+      - run: just ci
+
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: js/package-lock.json
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just,wasm-pack
+
+      - name: Install dependencies
+        run: cd js && npm ci && npx playwright install --with-deps chromium
+
+      # Separate job because it needs a browser download, and because a broken
+      # loader is a different failure from a broken verifier.
+      - run: just test-browser
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+      - name: Check rustdoc
+        run: cargo doc --no-deps --document-private-items
+        env:
+          RUSTDOCFLAGS: "-D warnings"
