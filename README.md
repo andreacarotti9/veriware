@@ -28,6 +28,8 @@ on Ethereum it means embedding a light client such as
 [Helios](https://github.com/a16z/helios), following sync committees, and
 waiting for it to sync, so almost nobody does.
 
+![Identical-looking payloads flow from the indexer through veriware's pipeline; the signature check is what separates the real one from the forgery](docs/pipeline.gif)
+
 Threshold-simplex removes the expense. The network's threshold key is one fixed
 96-byte value, so checking a certificate is a single stateless signature
 verification: no headers to follow, no state to sync, nothing to store.
