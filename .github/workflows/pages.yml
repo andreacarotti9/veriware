@@ -1,0 +1,76 @@
+# Deploys the demo to GitHub Pages on every push to main.
+#
+# The demo is served from the repository root locally (`just demo`), so the
+# site artifact preserves that layout: `demo/` next to `js/dist/` and
+# `fixtures/`. All three relative paths the page depends on keep working:
+#   demo/main.js   imports ../js/dist/index.js
+#   js/dist        resolves ./wasm/veriware_bg.wasm
+#   demo/main.js   fetches ../fixtures/vectors.json (offline replay)
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.ref == 'refs/heads/main' }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: js/package-lock.json
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just,wasm-pack
+
+      - name: Install dependencies
+        run: cd js && npm ci
+
+      # Builds the WASM, the package, and compiles demo/main.ts to demo/main.js.
+      - name: Build demo
+        run: just demo-build
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site/demo _site/js _site/fixtures
+          cp demo/index.html demo/main.js _site/demo/
+          cp -r js/dist _site/js/dist
+          cp fixtures/vectors.json _site/fixtures/
+          # Land visitors on the demo when they hit the site root.
+          printf '%s\n' '<!doctype html><meta http-equiv="refresh" content="0; url=./demo/"><a href="./demo/">demo</a>' > _site/index.html
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
